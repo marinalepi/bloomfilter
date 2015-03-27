@@ -1,28 +1,30 @@
 #include <stdlib.h>
 
-unsigned int sax_hash(unsigned char *key, size_t len) {
+unsigned int sax_hash(const unsigned char *key, size_t len) {
 	unsigned int h = 0;
 
-	unsigned char *keyEnd = key+len;
+	const unsigned char *keyEnd = key+len;
 	while (key <= keyEnd) {
-		h ^= (h<<5) + (h>>2) + (*key)++;
+		h ^= (h<<5) + (h>>2) + (*key);
+		key++;
 	}
 	return h;
 }
 
-unsigned int sdbm_hash(unsigned char *key, size_t len) {
+unsigned int sdbm_hash(const unsigned char *key, size_t len) {
 	unsigned int h = 0;
 
-	unsigned char *keyEnd = key+len;
+	const unsigned char *keyEnd = key+len;
 	while (key <= keyEnd) {
-		h = (*key)++ + (h<<6) + (h<<16) - h;
+		h = *key + (h<<6) + (h<<16) - h;
+		key++;
 	}
 	return h;
 }
 
 #define ROTATE_LEFT(x, n) (((x) << (n)) | ((x) >> (32-(n))))
 
-unsigned int murmur3(unsigned char *key, size_t len) {
+unsigned int murmur3(const unsigned char *key, size_t len) {
 	const size_t nblocks = len / 4;
 
 	unsigned int h = 0;
@@ -71,13 +73,14 @@ unsigned int murmur3(unsigned char *key, size_t len) {
 	return h;
 }
 
-unsigned int fnv(unsigned char *key, size_t len) {
+unsigned int fnv(const unsigned char *key, size_t len) {
 	unsigned int h = 2166136261;
 
-	unsigned char *keyEnd = key+len;
+	const unsigned char *keyEnd = key+len;
 	while (key <= keyEnd) {
-        h = h ^ (*key)++;
+        h = h ^ (*key);
         h = h * 16777619;
+		key++;
 	}
 	return h;
 }
